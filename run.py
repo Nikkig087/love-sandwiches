@@ -1,4 +1,4 @@
-import gspread
+import gspread 
 from google.oauth2.service_account import Credentials
 from pprint import pprint
 
@@ -67,7 +67,7 @@ def update_sales_worksheet(data):
     sales_worksheet.append_row(data) # appends a row to the sales sheet
     print("Sales worksheet updated sucessfully \n")
 
-def calculate_surplus_data(sales_data):
+def calculate_surplus_data(sales_row):
     '''
     Compare sales with stock and calculate the surplus for each item type.
 
@@ -80,7 +80,22 @@ def calculate_surplus_data(sales_data):
     stock = SHEET.worksheet("stock").get_all_values()
     # the above states we want to get all data from the stock sheet
     stock_row = stock[-1] #use a slice to access last row in stock list
-    print(stock_row)
+    
+    surplus_data = []
+    for stock, sales in zip(stock_row, sales_row):
+        surplus = int(stock) - sales
+        surplus_data.append(surplus)
+
+    return surplus_data
+
+def update_surplus_worksheet(data):
+    '''
+    Update surplus worksheet, add new row with the list data provided
+    '''
+    print("updating surplus worksheet....\n")
+    surplus_worksheet = SHEET.worksheet("surplus") # this is the way we access our sheet
+    surplus_worksheet.append_row(data) # appends a row to the sales sheet
+    print("surplus worksheet updated sucessfully \n")
 
 def main():
 
@@ -90,7 +105,8 @@ def main():
     data = get_sales_data()
     sales_data = [int(num) for num in data]
     update_sales_worksheet(sales_data)
-    calculate_surplus_data(sales_data)
+    new_surplus_data = calculate_surplus_data(sales_data)
+    update_surplus_worksheet(new_surplus_data)
 
 print("Welcome to Love Sandwiches Data Automation") #this is where our instructions will be for our game
 
