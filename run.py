@@ -122,10 +122,26 @@ def get_last_5_entries_sales():
     #print(column)
     columns =[]
 
-    for int in range(1,7):
-        column = sales.col_values(int)
-        columns.append(column[-5:])  # this gets the last 5 which is what we want
+    for ind in range(1,7):
+        column = sales.col_values(ind)
+        columns.append(column[-5:])  # this gets the last 5 values in each column which is what we want
     return columns
+
+def calculate_stock_data(data):
+    '''
+    Calculate the average stock for each item type, adding 10%
+    '''
+
+    print("Calculating Stock data ....\n")
+
+    new_stock_data = []
+
+    for column in data:
+        int_column = [int(num) for num in column] # convert values into int so we can perform calculations on them
+        average = sum(int_column)/ len(int_column)  # gives us the avg from each column
+        stock_num = average * 1.1 # adds 10% to avg
+        new_stock_data.append(round(stock_num))
+    return new_stock_data
 
 def main():
 
@@ -139,8 +155,10 @@ def main():
 
     new_surplus_data = calculate_surplus_data(sales_data)
     update_worksheet(new_surplus_data, "surplus") # here we want to update the surplus worksheet
-
+    sales_columns = get_last_5_entries_sales()
+    stock_data = calculate_stock_data(sales_columns)
+    update_worksheet(stock_data,"stock")
 print("Welcome to Love Sandwiches Data Automation") #this is where our instructions will be for our game
 
 main()
-sales_columns = get_last_5_entries_sales
+
